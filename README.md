@@ -1,138 +1,176 @@
-# REDE-LUZ — ⚡ Monitoramento Comunitário de Quedas de Energia
+# ⚡ REDE-LUZ – Monitoramento Comunitário de Quedas de Energia
 
-Sistema desenvolvido para as disciplinas de **C# Software Development** e **Mobile Development** do 3º ano de Engenharia de Software — FIAP.
+## 🔍 Visão Geral
 
-## 🎯 Objetivo do Projeto
+O REDE-LUZ é uma solução tecnológica desenvolvida para possibilitar que cidadãos comuniquem, em tempo real, quedas de energia elétrica. Os dados reportados são armazenados e visualizados em um painel acessível via aplicativo, fortalecendo a comunicação entre usuários e autoridades responsáveis.
 
-Desenvolver uma solução multiplataforma para registrar e monitorar episódios de falta de energia, promovendo comunicação entre cidadãos e instituições, mesmo em contextos críticos como desastres naturais ou apagões em larga escala.
+A aplicação foi desenvolvida como projeto interdisciplinar, com foco em **Resiliência de Sistemas**, **Cibersegurança**, **Engenharia de Software** e **Computação Móvel**.
 
-## 📋 Requisitos Funcionais e Não Funcionais
+---
 
-### ✅ Funcionais
+## 🧩 Tecnologias Utilizadas
 
-- Registro de falhas com data, local e descrição
-- Cadastro e listagem de regiões atingidas
-- Registro de tempo de interrupção
-- Descrição dos prejuízos causados
-- Exibição de recomendações de segurança
-- Autenticação obrigatória no sistema (C#)
+### 🌐 Back-End (API RESTful - .NET 8)
+- ASP.NET Core
+- Entity Framework Core
+- SQL Server
+- JWT (Autenticação)
+- Testes via Postman
 
-### ⚙️ Não Funcionais
+### 📱 Front-End (Aplicativo Mobile)
+- React Native com Expo
+- TypeScript
+- Axios (consumo da API)
+- React Navigation
+- AsyncStorage (armazenamento de token)
 
-- Backend com arquitetura em camadas
-- Mobile com navegação fluida e dados persistidos localmente
-- Armazenamento local via AsyncStorage
-- Código organizado com boas práticas
-- Tratamento de erros via try-catch
+---
 
-## 📱 Telas do App Mobile
+## 🎯 Funcionalidades
 
-Aplicativo desenvolvido em **React Native**, com as seguintes telas:
+### 👨‍💻 Usuários
+- Cadastro com e-mail e senha
+- Login seguro com token JWT
 
-- 🏠 Panorama Geral: resumo das falhas registradas
-- 📍 Localização Atingida: cadastro e listagem das regiões afetadas
-- ⏱️ Tempo de Interrupção: registro da duração do apagão
-- 💸 Prejuízos Causados: descrição dos danos
-- 🛡️ Recomendações: orientações de segurança
+### ⚠️ Ocorrências
+- Registro de nova ocorrência de queda de energia
+- Consulta às ocorrências próprias
+- Consulta de ocorrências públicas (de todos os usuários)
+- Detalhamento completo da ocorrência, incluindo endereço via integração com ViaCEP
 
-Todos os dados são armazenados localmente com `AsyncStorage`.
+---
 
-## 🧑‍💻 Backend em C# (.NET)
+## 📋 Requisitos
 
-API construída com **ASP.NET Core**, utilizando a seguinte organização:
+### ✅ Requisitos Funcionais
+- Permitir login e cadastro de usuários
+- Cadastrar nova ocorrência de queda de energia
+- Exibir todas as ocorrências registradas por um usuário
+- Exibir todas as ocorrências públicas para consulta geral
+- Exibir detalhes de uma ocorrência (data, tempo, localização)
 
-- 📂 Controllers: pontos de entrada da API  
-- 🧩 Models: entidades e DTOs  
-- 🔧 Services: lógica de negócio  
-- 🗄️ Migrations: controle de banco com EF Core  
+### ❌ Requisitos Não Funcionais
+- API segura com autenticação via JWT
+- Banco de dados relacional com EF Core
+- Interface amigável e responsiva (mobile)
+- Código organizado com separação de responsabilidades (DTOs, Controllers, Models)
 
-### Funcionalidades implementadas:
+---
 
-- 🔐 Autenticação de usuários  
-- 📝 Registro e listagem de ocorrências  
-- 📊 Geração de logs  
-- ❗ Tratamento de exceções  
-- 🧱 Código organizado por responsabilidade  
+## 🧭 Fluxo do Sistema
 
-## 🗂️ Estrutura do Projeto
+```mermaid
+graph TD
+  A[Usuário acessa app] --> B[Login ou Cadastro]
+  B --> C{Autenticado?}
+  C -- Não --> B
+  C -- Sim --> D[Tela Principal]
+  D --> E[Visualizar Minhas Ocorrências]
+  D --> F[Visualizar Ocorrências Públicas]
+  D --> G[Criar Nova Ocorrência]
+  G --> H[Formulário + Envio via API]
+  F --> I[Detalhes via API + ViaCEP]
+  E --> J[Detalhes da Própria Ocorrência]
+```
 
-REDE-LUZ/
-├── back-end/
-│   └── REDE-LUZ.API/
-│       ├── Controllers/
-│       ├── Models/
-│       ├── Services/
-│       ├── Program.cs
-│       └── appsettings.json
-├── mobile-app/
-│   ├── components/
-│   ├── screens/
-│   ├── App.js
-│   └── storage/
-└── README.md
+---
 
+## ⚙️ Como Executar o Projeto
 
-## 🧪 Instruções de Execução
+### 🔧 Backend (.NET / C# 8)
 
-### 🔧 Backend (C#)
+1. Navegue até a pasta do back-end:
+   ```bash
+   cd back-end/REDE-LUZ.API/REDE-LUZ.API
+   ```
 
-1. Navegue até a pasta do backend:  
-   `cd back-end/REDE-LUZ.API`
+2. Configure sua string de conexão no arquivo `appsettings.json`:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Server=localhost;Database=RedeluzDb;Trusted_Connection=True;"
+   }
+   ```
 
-2. Restaure os pacotes:  
-   `dotnet restore`
+3. Execute as migrations:
+   ```bash
+   dotnet ef database update
+   ```
 
-3. Atualize o banco de dados:  
-   `dotnet ef database update`
+4. Rode o servidor:
+   ```bash
+   dotnet run
+   ```
 
-4. Inicie a aplicação:  
-   `dotnet run`
+---
 
-### 📲 Mobile App
+### 📱 Frontend (React Native)
 
-1. Navegue até a pasta do app mobile:  
-   `cd mobile-app`
+1. Navegue até a pasta do front:
+   ```bash
+   cd front-end
+   ```
 
-2. Instale as dependências:  
-   `npm install`
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-3. Execute o app:  
-   `npx react-native run-android`
+3. Execute o app:
+   ```bash
+   npx expo start
+   ```
 
-## 🛠️ Simulações de Erros
+---
 
-O backend utiliza blocos `try-catch` para validar e tratar:
+## 🔐 Autenticação JWT
 
-- Campos obrigatórios vazios  
-- Tipos de dados incorretos  
-- Datas ou valores numéricos inválidos  
+Após o login, o token JWT é salvo localmente (AsyncStorage). Ele é enviado automaticamente nos headers de requisição usando o Axios:
 
-Mensagens claras são retornadas ao usuário quando houver erro.
+```ts
+headers: {
+  Authorization: `Bearer ${token}`
+}
+```
 
-## ✨ Boas Práticas de Código
+---
 
-- Classes coesas e bem separadas  
-- Nomes significativos para métodos e variáveis  
-- Reutilização de lógica  
-- Comentários úteis  
-- Código limpo e organizado  
+## 📁 Estrutura de Pastas
 
-## 👥 Integrantes
+```
+📦REDE-LUZ
+├── back-end
+│   └── REDE-LUZ.API
+│       ├── Controllers
+│       ├── DTOs
+│       ├── Models
+│       ├── Data
+│       └── Program.cs
+├── front-end
+│   ├── screens
+│   ├── navigation
+│   ├── services
+│   └── types
+```
 
-- Gustavo Bonfim — RMXXXXX  
-- Enzo Luiz — RMXXXXX  
-- Lucas Yuji — RMXXXXX
+---
 
-## 📌 Observações Finais
+## 🧠 Regras de Negócio
 
-Este projeto atende aos critérios das disciplinas de **C# Software Development** e **Mobile Development**, incluindo:
+- O CEP deve seguir o formato `00000-000` e ser válido
+- A data de início da ocorrência não pode estar no futuro
+- A duração da queda não pode ser menor que 1 minuto
+- Apenas usuários autenticados podem registrar ou visualizar ocorrências
 
-- Backend modular e funcional  
-- App React Native com 5 telas mínimas  
-- Persistência de dados local  
-- Tratamento de erros e autenticação  
-- Estrutura limpa e bem documentada  
+---
 
-## 📜 Licença
+## 👨‍🏫 Equipe
 
-Projeto acadêmico — Todos os direitos reservados.
+- Gustavo Bonfim  
+- Enzo Luiz  
+- Lucas Yuji
+
+---
+
+## 📄 Licença
+
+Este projeto é acadêmico e não possui licença comercial.
