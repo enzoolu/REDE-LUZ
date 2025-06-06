@@ -1,45 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import api from '../services/api';
 import { Ocorrencia } from '../types/Ocorrencia';
 import { useNavigation } from '@react-navigation/native';
+import { carregarOcorrenciasLocalmente, salvarOcorrenciasLocalmente } from '../storage/ocorrenciasStorage';
 
 const OcorrenciasScreen = () => {
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigation = useNavigation<any>();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const carregarDados = async () => {
+      const locais = await carregarOcorrenciasLocalmente();
+      setOcorrencias(locais);
+
       try {
         const response = await api.get('/ocorrencia');
         setOcorrencias(response.data);
+        await salvarOcorrenciasLocalmente(response.data);
       } catch (error) {
-        console.error('Erro ao carregar ocorrências:', error);
-        Alert.alert('Erro', 'Falha ao carregar ocorrências.');
-      } finally {
-        setLoading(false);
+        console.warn('Erro ao buscar da API. Usando dados locais.', error);
+        Alert.alert('Atenção', 'Não foi possível atualizar dados. Usando dados armazenados.');
       }
     };
 
-    fetchData();
+    carregarDados();
   }, []);
-
-  if (loading) {
-    return <ActivityIndicator style={{ flex: 1 }} size="large" color="#0000ff" />;
-  }
-
-  if (ocorrencias.length === 0) {
-    return <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhuma ocorrência encontrada.</Text>;
-  }
 
   return (
     <View style={styles.container}>
@@ -47,12 +33,11 @@ const OcorrenciasScreen = () => {
         data={ocorrencias}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => navigation.navigate('DetalhesOcorrencia', { id: item.id })}
-          >
-            <Text style={styles.title}>{item.cidade} - {item.bairro}</Text>
-            <Text>{item.tempoInterrupcao} minutos</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('DetalhesOcorrencia', { id: item.id })}>
+            <View style={styles.card}>
+              <Text style={styles.bairro}>{item.bairro}</Text>
+              <Text>{item.tempoInterrupcao} min</Text>
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -61,14 +46,9 @@ const OcorrenciasScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  item: {
-    padding: 15,
-    backgroundColor: '#f9f9f9',
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  title: { fontWeight: 'bold' },
+  container: { flex: 1, padding: 10 },
+  card: { backgroundColor: '#f2f2f2', padding: 15, marginVertical: 5, borderRadius: 8 },
+  bairro: { fontWeight: 'bold', fontSize: 16 }
 });
 
 export default OcorrenciasScreen;
