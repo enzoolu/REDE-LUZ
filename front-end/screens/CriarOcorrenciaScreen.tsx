@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import api from '../services/api';
-import { getUserId } from '../storage/token';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CriarOcorrenciaScreen = ({ navigation }: any) => {
   const [cep, setCep] = useState('');
@@ -25,8 +25,8 @@ const CriarOcorrenciaScreen = ({ navigation }: any) => {
     }
 
     try {
-      const usuarioId = await getUserId();
-      if (!usuarioId) {
+      const userId = await AsyncStorage.getItem('user_id'); // <-- padronizado
+      if (!userId) {
         Alert.alert('Erro', 'Usuário não autenticado.');
         return;
       }
@@ -41,13 +41,15 @@ const CriarOcorrenciaScreen = ({ navigation }: any) => {
         prejuizos: descricao || 'Sem descrição',
         inicio: now.toISOString(),
         duracaoMinutos: parseInt(tempo),
-        usuarioId: Number(usuarioId),
+        usuarioId: Number(userId),
       };
 
       await api.post('/ocorrencia', payload);
 
       Alert.alert('Sucesso', 'Ocorrência criada com sucesso!');
-      navigation.navigate('MinhasOcorrencias');
+
+      // Redireciona para Main, garantindo atualização de abas
+      navigation.replace('Main');
 
       // Limpa os campos
       setCep('');
@@ -68,8 +70,19 @@ const CriarOcorrenciaScreen = ({ navigation }: any) => {
       <TextInput style={styles.input} placeholder="Número" value={numero} onChangeText={setNumero} />
       <TextInput style={styles.input} placeholder="Bairro" value={bairro} onChangeText={setBairro} />
       <TextInput style={styles.input} placeholder="Cidade" value={cidade} onChangeText={setCidade} />
-      <TextInput style={styles.input} placeholder="Tempo de Interrupção (min)" keyboardType="numeric" value={tempo} onChangeText={setTempo} />
-      <TextInput style={styles.input} placeholder="Descrição dos danos" value={descricao} onChangeText={setDescricao} />
+      <TextInput
+        style={styles.input}
+        placeholder="Tempo de Interrupção (min)"
+        keyboardType="numeric"
+        value={tempo}
+        onChangeText={setTempo}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Descrição dos danos"
+        value={descricao}
+        onChangeText={setDescricao}
+      />
       <Button title="Enviar Ocorrência" onPress={handleSubmit} />
     </ScrollView>
   );

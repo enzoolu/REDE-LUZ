@@ -26,17 +26,11 @@ const LoginScreen = ({ navigation }: Props) => {
     }
 
     setLoading(true);
-
-    // Use o IP real da sua rede ou 10.0.2.2 para emulador Android
     const apiUrl = 'http://192.168.3.66:5239/api/auth/login';
     console.log('Enviando login para:', apiUrl);
 
     try {
-      const response = await axios.post(apiUrl, {
-        email,
-        senha,
-      });
-
+      const response = await axios.post(apiUrl, { email, senha });
       console.log('Resposta da API:', response.data);
 
       const { token, usuario } = response.data;
@@ -46,7 +40,7 @@ const LoginScreen = ({ navigation }: Props) => {
       }
 
       await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user_id', usuario.id.toString());
+      await AsyncStorage.setItem('user_id', usuario.id.toString()); // ⬅ chave padronizada
 
       navigation.replace('Main');
     } catch (error: any) {

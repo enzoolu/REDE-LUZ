@@ -14,7 +14,6 @@ const RegisterScreen = ({ navigation }: Props) => {
     try {
       await axios.post('http://192.168.3.66:5239/api/auth/register', { email, senha });
       Alert.alert('Sucesso', 'Conta criada com sucesso!');
-      navigation.navigate('Login');
       navigation.replace('Login');
     } catch (error) {
       Alert.alert('Erro', 'Falha ao criar conta');

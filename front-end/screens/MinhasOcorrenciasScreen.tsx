@@ -23,7 +23,7 @@ export default function MinhasOcorrenciasScreen() {
 
   const fetchData = async () => {
     try {
-      const userId = await AsyncStorage.getItem('userId');
+      const userId = await AsyncStorage.getItem('user_id'); // corrigido
 
       if (!userId) {
         Alert.alert('Erro', 'Usuário não autenticado.');
@@ -44,7 +44,7 @@ export default function MinhasOcorrenciasScreen() {
     useCallback(() => {
       setLoading(true);
       fetchData();
-    }, [])
+    }, []) // removido o `route`
   );
 
   const renderItem: ListRenderItem<Ocorrencia> = ({ item }) => (
@@ -53,7 +53,7 @@ export default function MinhasOcorrenciasScreen() {
       onPress={() => navigation.navigate('DetalhesOcorrencia', { id: item.id })}
     >
       <Text style={styles.title}>{item.cidade} - {item.bairro}</Text>
-      <Text>{item.tempoInterrupcao}</Text>
+      <Text>{item.tempoInterrupcao} minutos</Text>
     </TouchableOpacity>
   );
 
@@ -82,7 +82,12 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: '#f9f9f9',
     marginBottom: 10,
-    borderRadius: 5,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  title: { fontWeight: 'bold' },
+  title: { fontWeight: 'bold', fontSize: 16 },
 });
