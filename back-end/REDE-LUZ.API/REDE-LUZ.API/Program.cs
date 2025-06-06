@@ -34,11 +34,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// CORS - Permitir qualquer origem
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Services
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
 
 var app = builder.Build();
+
+// Libera a porta para acesso pela rede local
+app.Urls.Add("http://0.0.0.0:5239");
+
+//  Ativa o CORS antes de tudo
+app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {

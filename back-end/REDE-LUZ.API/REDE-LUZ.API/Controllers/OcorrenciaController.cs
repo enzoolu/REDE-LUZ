@@ -35,8 +35,8 @@ namespace REDE_LUZ_API.Controllers
                 if (request.DuracaoMinutos <= 0)
                     return BadRequest("Duração deve ser maior que zero.");
 
-                if (request.Inicio > DateTime.Now)
-                    return BadRequest("Data de início não pode ser no futuro.");
+                if (request.Inicio > DateTime.Now.AddMinutes(1))
+                    return BadRequest("Data de início não pode ser mais de 1 minuto no futuro.");
 
                 var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.Id == request.UsuarioId);
                 if (!usuarioExiste)
@@ -46,6 +46,8 @@ namespace REDE_LUZ_API.Controllers
                 {
                     Cep = request.Cep,
                     Numero = request.Numero,
+                    Bairro = request.Bairro,
+                    Cidade = request.Cidade,
                     Inicio = request.Inicio,
                     DuracaoMinutos = request.DuracaoMinutos,
                     Prejuizos = request.Prejuizos,
@@ -80,12 +82,24 @@ namespace REDE_LUZ_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Ocorrencia>> GetOcorrencia(int id)
         {
-            var ocorrencia = await _context.Ocorrencias.FindAsync(id);
+            var ocorrencia = await _context.Ocorrencias
+                .Include(o => o.Usuario)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
             if (ocorrencia == null)
-            {
                 return NotFound();
-            }
+
             return ocorrencia;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Ocorrencia>>> GetTodasOcorrencias()
+        {
+            var ocorrencias = await _context.Ocorrencias
+                .Include(o => o.Usuario)
+                .ToListAsync();
+
+            return Ok(ocorrencias);
         }
     }
 }

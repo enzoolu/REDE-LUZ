@@ -26,7 +26,7 @@ namespace REDE_LUZ_API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(LoginDto request)
+        public async Task<ActionResult<object>> Login(LoginDto request)
         {
             try
             {
@@ -37,7 +37,17 @@ namespace REDE_LUZ_API.Controllers
                 if (usuario == null)
                     return Unauthorized();
 
-                return Ok(_tokenService.GerarToken(usuario));
+                var token = _tokenService.GerarToken(usuario);
+
+                return Ok(new
+                {
+                    token,
+                    usuario = new
+                    {
+                        usuario.Id,
+                        usuario.Email
+                    }
+                });
             }
             catch (Exception ex)
             {
