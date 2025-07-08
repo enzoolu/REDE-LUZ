@@ -163,14 +163,6 @@ headers: {
 
 ---
 
-## 👨‍🏫 Equipe
-
-- Gustavo Bonfim  
-- Enzo Luiz  
-- Lucas Yuji
-
----
-
 ## 📄 Licença
 
 Este projeto é acadêmico e não possui licença comercial.
